@@ -1,0 +1,41 @@
+
+svd_pretrained_path: "stabilityai/stable-video-diffusion-img2vid"
+pretrained_model_path: "pretrained_weights/CameraCtrl_svd.ckpt"
+down_block_types: ['CrossAttnDownBlockSpatioTemporalPoseCond', 'CrossAttnDownBlockSpatioTemporalPoseCond', 'CrossAttnDownBlockSpatioTemporalPoseCond', 'DownBlockSpatioTemporal']
+up_block_types: ['UpBlockSpatioTemporal', 'CrossAttnUpBlockSpatioTemporalPoseCond', 'CrossAttnUpBlockSpatioTemporalPoseCond', 'CrossAttnUpBlockSpatioTemporalPoseCond']
+
+pose_encoder_kwargs:
+  downscale_factor: 8
+  channels: [320, 640, 1280, 1280]
+  nums_rb: 2
+  cin: 384
+  ksize: 1
+  sk: true
+  use_conv: false
+  compression_factor: 1
+  temporal_attention_nhead: 8
+  attention_block_types: ["Temporal_Self", ]
+  temporal_position_encoding: true
+  temporal_position_encoding_max_len: 14
+
+attention_processor_kwargs:
+  add_spatial: false
+  add_temporal: true
+  attn_processor_name: 'attn1'
+  pose_feature_dimensions: [320, 640, 1280, 1280]
+  query_condition: true
+  key_value_condition: true
+  scale: 1.0
+
+P_mean: 0.7
+P_std: 1.6
+condition_image_noise_mean: -3.0
+condition_image_noise_std: 0.5
+fps: 7
+motion_bucket_id: 127
+
+num_inference_steps: 25
+min_guidance_scale: 1.0
+max_guidance_scale: 3.0
+
+enable_xformers_memory_efficient_attention: true

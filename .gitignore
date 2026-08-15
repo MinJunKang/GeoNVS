@@ -1,0 +1,27 @@
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+
+outputs*/
+wandb/
+logs/
+validation_images/
+# model weights: ignore everything under pretrained_weights/ (incl. subdirs)
+pretrained_weights/*
+!pretrained_weights/.gitkeep
+
+datasets/
+*.log
+
+# evaluation / experiment outputs
+work_dirs*/
+*.xlsx
+
+# CUDA extension build artifacts
+third_party/*/build/
+third_party/*/dist/
+
+# vendored GLM ships 56MB of doxygen HTML that is not needed to build
+third_party/*/third_party/glm/doc/

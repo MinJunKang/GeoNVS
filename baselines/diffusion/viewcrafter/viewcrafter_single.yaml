@@ -1,0 +1,39 @@
+# point cloud render settings
+mode: "single_view_target"
+traj_txt:
+elevation: 5.0
+center_scale: 1.0
+d_theta: -30.0
+d_phi: 45.0
+d_r: -0.2
+bg_trd: 0.2
+dpt_trd: 1.0
+
+
+# dust3r model settings
+niter: 300
+schedule: "linear"
+batch_size: 1
+lr: 0.01
+min_conf_thr: 3.0
+
+
+# diffusion settings
+config: "baselines/diffusion/viewcrafter/configs/inference_pvd_512.yaml"
+ddim_steps: 50
+ddim_eta: 1.0
+bs: 1
+height: 320
+width: 512
+frame_stride: 10
+text_input: true
+unconditional_guidance_scale: 7.5
+seed: 123
+video_length: 25
+prompt: "Rotating view of a scene"
+multiple_cond_cfg: false
+cfg_img:
+timestep_spacing: "uniform_trailing"
+guidance_rescale: 0.7
+perframe_ae: true
+n_samples: 1

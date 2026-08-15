@@ -1,0 +1,27 @@
+
+
+use_gs_adapter: true
+add_lora: true
+knum: 256
+gs_channel_dim: 64
+gs_layer_indices: [2, 4, 8]  # indices of layers to apply GS-Adapter
+
+multi_scale_layer:
+  use_bn: false
+
+fusion_layer:
+  fusion_method: concat
+  zero_init: false
+
+attn_layer:
+  detach_input: true
+  use_gs_positional_encoding: true
+  gs_rotation_encoding: false
+  render_color: false
+  render_uncertainty: false
+  use_feature_loss: true
+  feature_loss_weight: 0.05
+  eps: 1e-8
+
+  recover_net_cfg:
+    hidden_feature_dim: 128

@@ -1,0 +1,3 @@
+[submodule "third_party/vipe"]
+	path = third_party/vipe
+	url = https://github.com/nv-tlabs/vipe.git
