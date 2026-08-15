@@ -294,13 +294,28 @@ class GenFusionModel(nn.Module):
         self.model_name = model_name
         self.weight_dtype = weight_dtype
         # Upstream GenFusion releases this file as "epoch=59-step=34000.ckpt"
-        # (DL3DV model); it is renamed at download time, see scripts/download_weights.sh.
+        # (DL3DV model); it is renamed at download time, see
+        # tools/scripts/download_weights_all.sh.
         checkpoint = "pretrained_weights/genfusion_dl3dv.ckpt"
         config_path = "baselines/diffusion/genfusion/generation_infer.yaml"
-        
+
         # define model here
         # requires open-clip-torch==2.12.0, whereas ours are open-clip-torch==2.32.0
         # requires transformers==4.46.2, whereas ours are transformers==4.49.0
+        #
+        # The numbers reported in the paper were measured in GenFusion's own
+        # environment (open-clip-torch==2.12.0 / transformers==4.46.2), not in
+        # the shared one this repository installs. GenFusion still runs here
+        # because encode_with_vision_transformer() tolerates the `input_patchnorm`
+        # attribute that open_clip >= 2.26 removed, but the conditioner is not
+        # bit-identical across those versions and the results are lower:
+        #
+        #                   this env        paper
+        #   DL3DV-10 P=6    10.94 PSNR      13.11 PSNR
+        #   RE10K    P=3    20.58 PSNR      22.69 PSNR
+        #
+        # Recreate the upstream environment to reproduce the reported numbers:
+        #   pip install open-clip-torch==2.12.0 transformers==4.46.2
         model_config = OmegaConf.load(config_path)
         self.model = self.instantiate_from_config(model_config)
         
