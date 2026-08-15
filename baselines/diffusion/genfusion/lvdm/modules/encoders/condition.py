@@ -261,18 +261,25 @@ class FrozenOpenCLIPEmbedder(AbstractEncoder):
     def encode_with_transformer(self, text):
         x = self.model.token_embedding(text)  # [batch_size, n_ctx, d_model]
         x = x + self.model.positional_embedding
-        x = x.permute(1, 0, 2)  # NLD -> LND
+        # open_clip >= 2.24 runs its transformer batch-first; older versions
+        # (the 2.12 / 2.17 this code was written against) expect LND.
+        batch_first = getattr(self.model.transformer, "batch_first", False)
+        if not batch_first:
+            x = x.permute(1, 0, 2)  # NLD -> LND
         x = self.text_transformer_forward(x, attn_mask=self.model.attn_mask)
-        x = x.permute(1, 0, 2)  # LND -> NLD
+        if not batch_first:
+            x = x.permute(1, 0, 2)  # LND -> NLD
         x = self.model.ln_final(x)
         return x
 
     def text_transformer_forward(self, x: torch.Tensor, attn_mask=None):
         # open_clip's causal mask is built for the full 77-token context; newer
         # torch validates that a 2D mask matches the actual sequence length, so
-        # crop it when a shorter sequence is passed (x is LND).
-        if attn_mask is not None and attn_mask.shape[0] != x.shape[0]:
-            attn_mask = attn_mask[: x.shape[0], : x.shape[0]]
+        # crop it when a shorter sequence is passed.
+        if attn_mask is not None:
+            seq = x.shape[1] if getattr(self.model.transformer, "batch_first", False) else x.shape[0]
+            if attn_mask.shape[0] != seq:
+                attn_mask = attn_mask[:seq, :seq]
         for i, r in enumerate(self.model.transformer.resblocks):
             if i == len(self.model.transformer.resblocks) - self.layer_idx:
                 break
@@ -483,9 +490,15 @@ class FrozenOpenCLIPImageEmbedderV2(AbstractEncoder):
         x = self.model.visual.patch_dropout(x)
         x = self.model.visual.ln_pre(x)
 
-        x = x.permute(1, 0, 2)  # NLD -> LND
+        # see the note in encode_with_transformer: newer open_clip is batch-first,
+        # and permuting into LND here would silently reduce self-attention to a
+        # length-1 sequence instead of raising.
+        batch_first = getattr(self.model.visual.transformer, "batch_first", False)
+        if not batch_first:
+            x = x.permute(1, 0, 2)  # NLD -> LND
         x = self.model.visual.transformer(x)
-        x = x.permute(1, 0, 2)  # LND -> NLD
+        if not batch_first:
+            x = x.permute(1, 0, 2)  # LND -> NLD
 
         return x
 
