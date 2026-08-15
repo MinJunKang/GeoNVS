@@ -22,7 +22,6 @@ Minjun Kang<sup>1</sup>, Inkyu Shin<sup>2</sup>, Taeyeop Lee<sup>1</sup>, Myungc
 - [x] Baseline comparison methods (geometry models and video-diffusion models)
 - [x] Geometry-fidelity metrics (ViPE camera pose error, Chamfer distance)
 - [ ] **Dataset preprocessing code** — being cleaned up, coming soon
-- [ ] Interactive demo
 
 ## ✨ Highlights
 
