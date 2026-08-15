@@ -32,7 +32,7 @@ from geonvs.seva.modules.autoencoder import AutoEncoder
 from geonvs.seva.modules.conditioner import CLIPConditioner
 from geonvs.seva.sampling import DiscreteDenoiser
 from geonvs.seva.utils import load_state_dict
-from geonvs.lrms.lrm_models import get_lrm_model
+from baselines.lrm_models import get_lrm_model
 from geonvs.seva.seva_diffusers import SGMWrapper
 
 device = "cuda:0"

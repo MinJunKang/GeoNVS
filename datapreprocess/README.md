@@ -124,7 +124,7 @@ Nested datasets take the sub-path, e.g. `--dataset wildrgbd/wildrgbd_hard`.
 ```
 Same keys as above, but `gaussians` keeps a leading batch dimension
 `(1, N, 95)` — this is what `GaussianModelWrapper` in
-`geonvs/lrms/lrm_models.py` expects. One file per `train_test_split_<P>.json`.
+`baselines/lrm_models.py` expects. One file per `train_test_split_<P>.json`.
 
 Evaluate with the matching name, e.g.
 `--lrm_model_name vggt_iv` (or `vggt_av`, `pi3_iv`, `pi3_av`).

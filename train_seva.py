@@ -471,7 +471,7 @@ def main():
     # Imported lazily so the LRM stack (and its extra CUDA extensions) is not
     # required when training with precomputed Gaussians (dl3dv / re10k).
     if (args.train_dataset[-1] == 'o' or args.valid_dataset[-1] == 'o'):
-        from geonvs.lrms.lrm_models import get_lrm_model
+        from baselines.lrm_models import get_lrm_model
         lrm_model = get_lrm_model(args.train_dataset, args.lrm_model)
     else:
         lrm_model = None

@@ -159,8 +159,11 @@ GeoNVS/
 │   ├── adapter_core/                   # GS-Adapter (lifting, refine, fusion)
 │   ├── seva/  camctrl/                 # diffusion backbones (diffusers ports)
 │   ├── decoder/                        # feature-capable Gaussian rasterization
-│   └── data/  utils/  lrms/            # datasets, helpers, geometry-model dispatch
-├── baselines/                          # third-party methods (diffusion + geometry)
+│   └── data/  utils/                   # datasets and helpers
+├── baselines/                          # third-party geometry / diffusion models
+│   ├── lrm_models.py                   # geometry-model dispatch (also used by GeoNVS)
+│   ├── diffusion_models.py             # video-diffusion baseline dispatch
+│   └── lrm/  diffusion/                # vendored upstream sources
 ├── datapreprocess/                     # training data + benchmark geometry priors
 ├── third_party/                        # CUDA extensions, ViPE submodule
 └── tools/                              # eval runners, geometry metrics, benchmark

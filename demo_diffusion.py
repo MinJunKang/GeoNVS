@@ -28,7 +28,7 @@ from geonvs.seva.geometry import (
     get_lookat,
     get_preset_pose_fov,
 )
-from geonvs.lrms.lrm_models import get_lrm_model
+from baselines.lrm_models import get_lrm_model
 from baselines.diffusion_models import ModelWrapper
 
 device = "cuda:0"
