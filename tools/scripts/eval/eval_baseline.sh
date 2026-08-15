@@ -5,7 +5,6 @@
 #
 # Methods:
 #   seva                      SEVA backbone, no adapter          (demo.py)
-#   lora                      LoRA-only ablation                 (demo.py)
 #   input_level <strength>    input-level geometry injection,    (demo.py)
 #                             i.e. denoise from rendered views (paper: s=0.2)
 #   lrm <lrm_name>            feed-forward geometry only         (demo_regression.py)
@@ -23,7 +22,7 @@ source tools/scripts/eval/benchmark.sh
 parse_common_flags "$@"
 set -- "${REMAINING_ARGS[@]}"
 
-METHOD=$1; shift || { echo "usage: $0 [--gpu N] <seva|lora|input_level|lrm|diffusion> ..."; exit 1; }
+METHOD=$1; shift || { echo "usage: $0 [--gpu N] <seva|input_level|lrm|diffusion> ..."; exit 1; }
 DIR_TAG=${DIR_TAG:-low}
 
 case "${METHOD}" in
@@ -39,14 +38,6 @@ run_entry() {  # <dataset> <num_inputs>
                 --data_path "${DATA}" --num_inputs "${NUM_INPUTS}" \
                 --video_save_fps ${VIDEO_FPS} \
                 --dir_tag=${DIR_TAG} --H=${RES} --W=${RES} --version=${VERSION} ;;
-        lora)
-            python demo.py \
-                --data_path "${DATA}" --num_inputs "${NUM_INPUTS}" \
-                --video_save_fps ${VIDEO_FPS} \
-                --gs_adapter_config configs/module_config/lora_only.yaml \
-                --gs_adapter_weight_path "${WEIGHTS:-pretrained_weights/eccv_gattn}" \
-                --lrm_model_name "${LRM:-vggt_iv}" \
-                --dir_tag=${DIR_TAG}_lora --H=${RES} --W=${RES} --version=${VERSION} --cfg=${CFG} ;;
         input_level)
             python demo.py \
                 --data_path "${DATA}" --num_inputs "${NUM_INPUTS}" \

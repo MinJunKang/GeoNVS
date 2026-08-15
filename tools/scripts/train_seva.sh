@@ -5,7 +5,6 @@
 # Variants:
 #   configs/module_config/gsadapter_eccv_base.yaml   : concat fusion (base)
 #   configs/module_config/gsadapter_eccv_gattn.yaml  : gated-attention fusion
-#   configs/module_config/lora_only.yaml             : LoRA-only baseline
 
 CONFIG=${1:-configs/module_config/gsadapter_eccv_gattn.yaml}
 OUTPUT_DIR=${2:-outputs_seva_$(basename ${CONFIG%.yaml})}

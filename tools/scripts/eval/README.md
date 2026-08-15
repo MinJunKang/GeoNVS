@@ -11,7 +11,7 @@ Run everything from the repository root.
 |---|---|
 | `benchmark.sh` | Dataset × reference-view table (Tables 1–2) + shared defaults. Sourced by the runners, not executed directly. |
 | `eval_geonvs.sh` | GeoNVS (SEVA + GS-Adapter + LoRA) — main results |
-| `eval_baseline.sh` | SEVA, LoRA-only, input-level injection, feed-forward geometry, diffusion baselines |
+| `eval_baseline.sh` | SEVA, input-level injection, feed-forward geometry, diffusion baselines |
 | `eval_long.sh` | Long-trajectory protocol (trajectory prior + `nearest-gt` chunking + voxel pruning) |
 | `eval_ablation.sh` | top-k / voxel pruning / CFG / fusion / geometry-model ablations |
 

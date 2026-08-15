@@ -95,7 +95,7 @@ shutil.copy(p, 'pretrained_weights/genfusion_dl3dv.ckpt')"
 # symbols so it runs in the main environment.)
 # MVSplat360 (--dm_model_name mvsplat360) reuses pretrained_weights/dl3dv_480p.ckpt
 # from the MVSplat360 section above.
-# CameraCtrl variants (cameractrl / geonvs_cameractrl_* / lora_cameractrl_*)
+# CameraCtrl variants (cameractrl / geonvs_cameractrl_*)
 # reuse pretrained_weights/CameraCtrl_svd.ckpt from the CameraCtrl section above.
 
 # GeoNVS camctrl weights (GS-Adapter + LoRA on CameraCtrl-SVD)

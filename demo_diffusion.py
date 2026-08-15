@@ -269,8 +269,6 @@ def main(
     # Weight location for the camctrl variants: a directory holding
     # gs_adapter_weights.pth + pytorch_lora_weights.safetensors for
     # geonvs_cameractrl_* (default: pretrained_weights/eccv_camctrl),
-    # or the .safetensors file itself for lora_cameractrl_*
-    # (default: pretrained_weights/cameractrl_lora_145K/pytorch_lora_weights.safetensors)
     camctrl_weight_path=None,
     **overwrite_options,
 ):
