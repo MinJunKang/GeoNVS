@@ -184,7 +184,7 @@ We thank the authors for releasing their code.
 
 ## 📄 License
 
-The GeoNVS code is released under Apache 2.0. Vendored third-party components
+The code is released under Apache 2.0. Vendored third-party components
 keep their own licenses, which take precedence for those directories — see
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). In particular `datapreprocess/vggt`
 (CC BY-NC 4.0) and the Gaussian rasterizers (Gaussian-Splatting License) are
