@@ -25,3 +25,5 @@ third_party/*/dist/
 
 # vendored GLM ships 56MB of doxygen HTML that is not needed to build
 third_party/*/third_party/glm/doc/
+third_party/*/third_party/glm/test/
+third_party/*/third_party/glm/util/

@@ -42,7 +42,6 @@ $PIP --no-build-isolation transformer_engine[pytorch]
 # $PIP --no-build-isolation third_party/diff-gaussian-rasterization
 # $PIP --no-build-isolation third_party/latent-gaussian-rasterization   # mvsplat360
 # $PIP -e baselines/lrm/Depth-Anything-3                                        # da3 (falls back to sys.path if skipped)
-# $PIP --no-build-isolation third_party/fused-ssim
 # $PIP --no-build-isolation third_party/simple-knn
 
 $PIP -r requirements.txt

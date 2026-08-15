@@ -28,7 +28,7 @@ adaptations, bug fixes) unless noted otherwise.
 | `third_party/rasterization_and_pup_fisher/` | [j-alex-hanson/gaussian-splatting-pup](https://github.com/j-alex-hanson/gaussian-splatting-pup) (3DGS derivative) | Gaussian-Splatting License (research use) |
 | `third_party/latent-gaussian-rasterization/` | 3DGS derivative | Gaussian-Splatting License (research use) |
 | `third_party/simple-knn/` | [graphdeco-inria (simple-knn)](https://gitlab.inria.fr/bkerbl/simple-knn) | Gaussian-Splatting License (research use) |
-| `third_party/fused-ssim/` | [rahul-goel/fused-ssim](https://github.com/rahul-goel/fused-ssim) | MIT |
+| `third_party/*/third_party/glm/` | [g-truc/glm](https://github.com/g-truc/glm) (vendored by each rasterizer, as upstream 3DGS does) | MIT / Happy Bunny |
 | `third_party/vipe` (git submodule, not vendored) | [nv-tlabs/vipe](https://github.com/nv-tlabs/vipe) | see upstream |
 
 Notes:
