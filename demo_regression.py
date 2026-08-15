@@ -326,6 +326,11 @@ def main(
                 item for item in glob.glob(osp.join(data_path, "*")) if os.path.isdir(item)
             ]
 
+    if not scenes:
+        raise FileNotFoundError(
+            f"no scenes found under {data_path!r}; check --data_path (BENCHMARK_ROOT)"
+        )
+
     for scene in tqdm(scenes):
         num_inputs = options.get("num_inputs", None)
         save_path_scene = os.path.join(
