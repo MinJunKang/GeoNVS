@@ -587,6 +587,9 @@ class HiSplatModel(GeometryModel):
         self.use_e3nn = True
         self.scale_invariant = False
         self.model_name = "hisplat"
+        # the pyramid encoder halves the feature map 6 times, so inputs must be
+        # a multiple of 64 (the base class only snaps to 16 by default)
+        self.scale_factor = 64
         checkpoint = 'pretrained_weights/hisplat_re10k.ckpt'
         
         ## MVSplat
