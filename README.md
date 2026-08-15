@@ -62,7 +62,8 @@ xformers, torch-scatter and transformer_engine. Optional blocks cover the extra
 baseline backbones.
 
 ```bash
-bash tools/scripts/download_weights.sh   # GeoNVS + backbone + baseline weights
+bash tools/scripts/download_weights_ours.sh   # GeoNVS weights + backbones (~2 GB)
+bash tools/scripts/download_weights_all.sh    # + every comparison baseline (~55 GB)
 ```
 
 `stabilityai/stable-virtual-camera` (SEVA) and the SVD VAE are pulled from the
@@ -140,12 +141,12 @@ chunks plus precomputed Gaussian priors:
 
 Each prior stores `means(3) ⊕ rot(4) ⊕ scale(3) ⊕ opacity(1) ⊕ fisher(36) ⊕
 SH(48)`. The generation pipeline (VGGT/Pi3 → per-scene 3DGS with PUP pruning →
-Fisher information) lives in [`datagen/`](datagen/) and also produces the
+Fisher information) lives in [`datapreprocess/`](datapreprocess/) and also produces the
 benchmark geometry priors used at evaluation time.
 
 > [!NOTE]
 > The dataset preprocessing code is still being cleaned up for release (see the
-> checklist above). [`datagen/README.md`](datagen/README.md) documents the
+> checklist above). [`datapreprocess/README.md`](datapreprocess/README.md) documents the
 > current state, the expected data layout and how to run both pipelines.
 
 ## 📁 Repository structure
@@ -159,9 +160,9 @@ GeoNVS/
 │   ├── adapter_core/                   # GS-Adapter (lifting, refine, fusion)
 │   ├── seva/  camctrl/                 # diffusion backbones (diffusers ports)
 │   ├── decoder/                        # feature-capable Gaussian rasterization
-│   └── data/  utils/  lrms/            # datasets, helpers, geometry models
-├── baselines/                          # comparison methods (diffusion + LRM)
-├── datagen/                            # geometry prior generation
+│   └── data/  utils/  lrms/            # datasets, helpers, geometry-model dispatch
+├── baselines/                          # third-party methods (diffusion + geometry)
+├── datapreprocess/                     # training data + benchmark geometry priors
 ├── third_party/                        # CUDA extensions, ViPE submodule
 └── tools/                              # eval runners, geometry metrics, benchmark
 ```
@@ -186,7 +187,7 @@ We thank the authors for releasing their code.
 
 The GeoNVS code is released under Apache 2.0. Vendored third-party components
 keep their own licenses, which take precedence for those directories — see
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). In particular `datagen/vggt`
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). In particular `datapreprocess/vggt`
 (CC BY-NC 4.0) and the Gaussian rasterizers (Gaussian-Splatting License) are
 restricted to non-commercial research use, and the released weights inherit the
 [Stability AI Non-Commercial Research Community License](https://huggingface.co/stabilityai/stable-virtual-camera/blob/main/LICENSE).

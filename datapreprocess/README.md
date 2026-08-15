@@ -12,11 +12,11 @@ the GS-Adapter consumes.
 
 The CUDA rasterizers and the Gaussian decoder are shared with the training /
 evaluation stack (`../third_party`, `../geonvs/decoder`), so everything runs in
-the same environment. `autoinstall.sh` only adds the datagen-specific extras
+the same environment. `autoinstall.sh` only adds the datapreprocess-specific extras
 (vendored VGGT, PyTorch3D, per-scene optimizer dependencies).
 
 ```bash
-cd datagen && bash autoinstall.sh
+cd datapreprocess && bash autoinstall.sh
 ```
 
 Model weights (VGGT `facebook/VGGT-1B`, Pi3 `yyfz233/Pi3`, MapAnything

@@ -51,7 +51,7 @@ def run_fisher(
     )
 
     if return_score:
-        # per-Gaussian sensitivity score (used e.g. for PUP pruning in datagen)
+        # per-Gaussian sensitivity score (used e.g. for PUP pruning in datapreprocess)
         fishers_score = torch.linalg.slogdet(fishers + eps * torch.eye(6, device=device))[1]
         return fishers_score.abs(), fishers
 

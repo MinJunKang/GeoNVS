@@ -302,9 +302,9 @@ class DepthSplatModel(GeometryModel):
             raise ValueError()
         
         ## DepthSplat
-        from geonvs.lrms.depthsplat.src.model.encoder import get_encoder, EncoderCfg
-        from geonvs.lrms.depthsplat.src.model.encoder.common.gaussian_adapter import GaussianAdapterCfg
-        from geonvs.lrms.depthsplat.src.model.encoder.visualization.encoder_visualizer_depthsplat_cfg import EncoderVisualizerDepthSplatCfg
+        from baselines.lrm.depthsplat.src.model.encoder import get_encoder, EncoderCfg
+        from baselines.lrm.depthsplat.src.model.encoder.common.gaussian_adapter import GaussianAdapterCfg
+        from baselines.lrm.depthsplat.src.model.encoder.visualization.encoder_visualizer_depthsplat_cfg import EncoderVisualizerDepthSplatCfg
         
         encoder_cfg = EncoderCfg(
             name='depthsplat',

@@ -9,14 +9,14 @@ adaptations, bug fixes) unless noted otherwise.
 
 | Directory | Upstream | License |
 |---|---|---|
-| `geonvs/lrms/depthsplat/` | [cvg/depthsplat](https://github.com/cvg/depthsplat) | MIT |
+| `baselines/lrm/depthsplat/` | [cvg/depthsplat](https://github.com/cvg/depthsplat) | MIT |
 | `baselines/lrm/mvsplat/` | [donydchen/mvsplat](https://github.com/donydchen/mvsplat) | MIT |
 | `baselines/lrm/mvsplat360/` | [donydchen/mvsplat360](https://github.com/donydchen/mvsplat360) | MIT |
 | `baselines/lrm/hisplat/` | [Open3DVLab/HiSplat](https://github.com/Open3DVLab/HiSplat) | no upstream license file (see note) |
 | `baselines/lrm/Depth-Anything-3/` | [ByteDance-Seed/Depth-Anything-3](https://github.com/ByteDance-Seed/Depth-Anything-3) | Apache-2.0 |
-| `datagen/vggt/` | [facebookresearch/vggt](https://github.com/facebookresearch/vggt) | CC BY-NC 4.0 (**non-commercial**) |
-| `datagen/pi3/` | [yyfz/Pi3](https://github.com/yyfz/Pi3) | BSD-3-Clause |
-| `datagen/mapanything/` | [facebookresearch/map-anything](https://github.com/facebookresearch/map-anything) | Apache-2.0 |
+| `datapreprocess/vggt/` | [facebookresearch/vggt](https://github.com/facebookresearch/vggt) | CC BY-NC 4.0 (**non-commercial**) |
+| `datapreprocess/pi3/` | [yyfz/Pi3](https://github.com/yyfz/Pi3) | BSD-3-Clause |
+| `datapreprocess/mapanything/` | [facebookresearch/map-anything](https://github.com/facebookresearch/map-anything) | Apache-2.0 |
 | `baselines/diffusion/viewcrafter/` (incl. vendored DUSt3R under `extern/dust3r/`) | [Drexubery/ViewCrafter](https://github.com/Drexubery/ViewCrafter) | Apache-2.0 (in-tree LICENSE); vendored DUSt3R is CC BY-NC-SA 4.0 (**non-commercial**) |
 | `baselines/diffusion/genfusion/` | [Inception3D/GenFusion](https://github.com/Inception3D/GenFusion) | MIT (upstream; no license file in vendored dir, see note) |
 | `baselines/diffusion/difix3d/` | [nv-tlabs/Difix3D](https://github.com/nv-tlabs/Difix3D) | NVIDIA License (**non-commercial**) + Stability AI Community License for the underlying SD-Turbo model (in-tree LICENSE.txt) |
@@ -33,7 +33,7 @@ adaptations, bug fixes) unless noted otherwise.
 
 Notes:
 
-- **`datagen/vggt/` is CC BY-NC 4.0**: the data-generation pipeline that uses
+- **`datapreprocess/vggt/` is CC BY-NC 4.0**: the data-generation pipeline that uses
   it is for non-commercial research use only.
 - The Gaussian-Splatting License (Inria / MPII) restricts the rasterizer
   submodules to non-commercial research use.

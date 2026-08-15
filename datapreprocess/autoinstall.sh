@@ -1,8 +1,8 @@
 #!/bin/bash
 # Install script for the GeoNVS data-generation pipeline.
 # The CUDA rasterizers are shared with the training/evaluation code
-# (../third_party), so datagen can run in the SAME environment as training —
-# this script only adds the datagen-specific packages on top.
+# (../third_party), so datapreprocess can run in the SAME environment as training —
+# this script only adds the datapreprocess-specific packages on top.
 #
 # Uses uv (https://docs.astral.sh/uv/) when available, falls back to pip.
 set -e
