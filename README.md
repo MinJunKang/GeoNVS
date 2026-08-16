@@ -2,6 +2,7 @@
 
 # GeoNVS: Geometry Grounded Video Diffusion for Novel View Synthesis
 
+[![Project page](https://img.shields.io/badge/Project%20page-GeoNVS-1a73e8.svg)](https://sites.google.com/view/minjun-kang/geonvs-eccv26)
 [![Paper](https://img.shields.io/badge/arXiv-2603.14965-b31b1b.svg)](https://arxiv.org/abs/2603.14965)
 [![Weights](https://img.shields.io/badge/🤗%20HuggingFace-Weights-yellow)](https://huggingface.co/HugMinjun/GeoNVS)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
