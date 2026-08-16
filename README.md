@@ -33,23 +33,23 @@ LoRA layers are trained.
 
 ## ✨ Highlights
 
-**Geometry as features, not pixels.** The GS-Adapter lifts input-view diffusion
-features into 3D Gaussians, renders them into every target view, and fuses them
-back into the diffusion features. Injecting geometry in *feature* space avoids
-the view-dependent color noise that degrades structural consistency when
-rendered images are injected at the input level.
+- **Geometry as features, not pixels.** The GS-Adapter lifts input-view
+  diffusion features into 3D Gaussians, renders them into every target view, and
+  fuses them back into the diffusion features. Injecting geometry in *feature*
+  space avoids the view-dependent color noise that degrades structural
+  consistency when rendered images are injected at the input level.
 
-**Adaptive Fusion that knows when to trust geometry.** A gating MLP predicts a
-per-pixel confidence weight from the diffusion and geometry features, so the
-prior is downweighted exactly where it is unreliable, such as reflective or
-occluded regions.
+- **Adaptive Fusion that knows when to trust geometry.** A gating MLP predicts a
+  per-pixel confidence weight from the diffusion and geometry features, so the
+  prior is downweighted exactly where it is unreliable, such as reflective or
+  occluded regions.
 
-**Plug-and-play with any geometry model.** The same trained adapter works with
-VGGT, Pi3, DepthSplat, MVSplat and others **without retraining**.
+- **Plug-and-play with any geometry model.** The same trained adapter works with
+  VGGT, Pi3, DepthSplat, MVSplat and others **without retraining**.
 
-**Backbone agnostic.** Demonstrated on both SEVA and CameraCtrl with 11.3% and
-14.9% improvements, up to 2× lower translation error and 7× lower Chamfer
-distance.
+- **Backbone agnostic.** Demonstrated on both SEVA and CameraCtrl with 11.3% and
+  14.9% improvements, up to 2× lower translation error and 7× lower Chamfer
+  distance.
 
 ## 🔧 Installation
 
