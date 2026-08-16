@@ -29,7 +29,7 @@ LoRA layers are trained.
 - [x] Pretrained GS-Adapter + LoRA weights ([HuggingFace](https://huggingface.co/HugMinjun/GeoNVS))
 - [x] Baseline comparison methods (geometry models and video-diffusion models)
 - [x] Geometry-fidelity metrics (ViPE camera pose error, Chamfer distance)
-- [ ] **Dataset preprocessing code** (being cleaned up, coming soon)
+- [x] Dataset preprocessing code ([`datapreprocess/`](datapreprocess/))
 
 ## ✨ Highlights
 
@@ -172,11 +172,6 @@ guideline: environment setup, the input layout and exact commands for each
 pipeline, what they write out, and a step-by-step walkthrough of view
 selection, geometry prediction, per-scene 3DGS with PUP pruning, and the Fisher
 information the GS-Adapter consumes (including runtime and sharding advice).
-
-> [!NOTE]
-> The dataset preprocessing code is still being cleaned up for release (see the
-> checklist above). The guideline above describes its current state and is
-> already runnable.
 
 ## 📁 Repository structure
 
