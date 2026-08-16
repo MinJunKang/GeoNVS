@@ -16,6 +16,8 @@ datasets/
 *.log
 
 # evaluation / experiment outputs
+runs/
+# outputs from before the runs/ move
 work_dirs*/
 *.xlsx
 

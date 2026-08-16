@@ -273,7 +273,7 @@ def main(
     **overwrite_options,
 ):
     num_inputs_opt = overwrite_options['num_inputs']
-    WORK_DIR = f"work_dirs_{dir_tag}_{dm_model_name}/{os.path.basename(data_path)}_{num_inputs_opt}"
+    WORK_DIR = f"runs/{dir_tag}_{dm_model_name}/{os.path.basename(data_path)}_{num_inputs_opt}"
     lrm_model = get_lrm_model(data_path, dm_model_name)
     if lrm_model is not None:
         lrm_model.eval()

@@ -297,7 +297,7 @@ def main(
     if gs_adapter_config is None:
         use_gs_adapter = False
         model_tag = "base" if not inpainting_mode else f"inpaint_{lrm_model_name}_{str(inpainting_strength)}"
-        WORK_DIR = f"work_dirs_{dir_tag}_{model_tag}/{data_path_tag}_{num_inputs_opt}_{str(version)}"
+        WORK_DIR = f"runs/{dir_tag}_{model_tag}/{data_path_tag}_{num_inputs_opt}_{str(version)}"
         
         if inpainting_mode:
             lrm_model = get_lrm_model(data_path, lrm_model_name)
@@ -337,7 +337,7 @@ def main(
             lrm_model = None
             
         tag = osp.basename(osp.normpath(gs_adapter_weight_path))
-        WORK_DIR = f"work_dirs_{dir_tag}_{tag}_{lrm_model_name}/{data_path_tag}_{num_inputs_opt}_{str(version)}"
+        WORK_DIR = f"runs/{dir_tag}_{tag}_{lrm_model_name}/{data_path_tag}_{num_inputs_opt}_{str(version)}"
         
         MODEL = SGMWrapper(
             weight_dtype=torch.float32,

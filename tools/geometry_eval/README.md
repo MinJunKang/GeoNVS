@@ -1,7 +1,7 @@
 # Geometry-Fidelity Evaluation
 
 Scripts for the paper's geometry-fidelity metrics, computed on videos generated
-by `demo.py` (the `img2vid` outputs under `work_dirs_*/`):
+by `demo.py` (the `img2vid` outputs under `runs/`):
 
 - **Pose error (T_err / R_err)** — [ViPE](https://github.com/nv-tlabs/vipe) estimates
   camera poses from each generated video; after Umeyama (Sim(3)) alignment they are
@@ -63,8 +63,8 @@ against `transforms.json`, writing `{method}_vipe/{dataset}/final_metrics.json`:
 
 ```bash
 cd geometry_eval
-python run_vipe.py dl3dv140_9_1 --root_path /path/to/work_dirs/eccv_ours              # predictions
-python run_vipe.py dl3dv140_9_1 --root_path /path/to/work_dirs/eccv_ours --eval_gt    # GT videos -> gt_vipe/
+python run_vipe.py dl3dv140_9_1 --root_path /path/to/runs/eccv_ours              # predictions
+python run_vipe.py dl3dv140_9_1 --root_path /path/to/runs/eccv_ours --eval_gt    # GT videos -> gt_vipe/
 ```
 
 ### 2. Chamfer distance / F-score (`chamfer_distance.py`)

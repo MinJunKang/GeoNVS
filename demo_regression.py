@@ -273,7 +273,7 @@ def main(
 ):
     continuous_rendering = bool(continuous_rendering)
     num_inputs_opt = overwrite_options['num_inputs']
-    WORK_DIR = f"work_dirs_{dir_tag}_{lrm_model_name}/{os.path.basename(data_path)}_{num_inputs_opt}"
+    WORK_DIR = f"runs/{dir_tag}_{lrm_model_name}/{os.path.basename(data_path)}_{num_inputs_opt}"
     MODEL = get_lrm_model(data_path, lrm_model_name)
     MODEL = MODEL.eval().to(device)
     total_params = sum(p.numel() for p in MODEL.parameters())

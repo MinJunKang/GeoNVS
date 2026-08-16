@@ -46,7 +46,7 @@ round-robin, one process per GPU). Other useful environment variables:
 `BENCHMARK_ROOT`, `CONFIG`, `WEIGHTS`,
 `LRM`, `CFG`, `RES`, `DIR_TAG`.
 
-Results are written to `work_dirs_<dir_tag>_*/`, with per-scene
+Results are written to `runs/<dir_tag>_*/`, with per-scene
 `performance_table.xlsx` and an aggregated `metric_result.xlsx`. Geometry
 fidelity metrics (camera pose error, Chamfer distance) are computed separately
 by the ViPE pipeline in [`../../geometry_eval/`](../../geometry_eval/).

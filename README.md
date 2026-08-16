@@ -87,7 +87,7 @@ python demo.py --data_path <benchmarkset>/dl3dv10 --num_inputs 3 \
     --lrm_model_name vggt_iv --H=384 --W=384 --version=1.0 --cfg=1.4
 ```
 
-Outputs land in `work_dirs_*/` with rendered frames, videos, per-scene
+Outputs land in `runs/<tag>/` with rendered frames, videos, per-scene
 `performance_table.xlsx` and an aggregated `metric_result.xlsx`.
 
 ## 📊 Evaluation
