@@ -711,9 +711,12 @@ def main():
     lr_scheduler = get_scheduler_(
         args.lr_scheduler,
         optimizer=optimizer,
+        # accelerate advances the wrapped scheduler once per process per
+        # optimizer step, so step counts are pre-multiplied to land on the
+        # requested number. Curve-shape arguments such as num_cycles are not
+        # step counts and must not be scaled; each schedule keeps its own.
         num_warmup_steps=args.lr_warmup_steps * accelerator.num_processes,
         num_training_steps=args.max_train_steps * accelerator.num_processes,
-        num_cycles=args.max_train_steps * accelerator.num_processes,
     )
 
     # Prepare everything with our `accelerator`.

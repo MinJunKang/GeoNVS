@@ -149,10 +149,16 @@ def get_scheduler_(
     step_rules: Optional[str] = None,
     num_warmup_steps: Optional[int] = None,
     num_training_steps: Optional[int] = None,
-    num_cycles: int = 1,
+    num_cycles: Optional[int] = None,
     power: float = 1.0,
     last_epoch: int = -1
 ):
+    """`diffusers.get_scheduler` plus the SEVA lambda schedulers.
+
+    `num_cycles` shapes the curve rather than counting steps (cosine reads it as
+    0.5 for a single half-period decay, cosine_with_restarts as the number of
+    restarts), so it is left unset by default and each schedule applies its own.
+    """
     if name == 'lambdalinear':
         scheduler_ = LambdaLinearScheduler(
             warm_up_steps=[num_warmup_steps],
@@ -172,23 +178,26 @@ def get_scheduler_(
         )
         scheduler = LambdaLR(optimizer, lr_lambda=scheduler_.schedule, last_epoch=last_epoch)
     elif name == 'warmup_cosine':
+        # unlike the cycle-based schedulers below, this one indexes nothing and
+        # compares its arguments to the step count directly, so they are scalars
         scheduler_ = LambdaWarmUpCosineScheduler(
-            warm_up_steps=[num_warmup_steps],
-            lr_min=[1.0],
-            lr_max=[1.0],
-            lr_start=[1.e-6],
-            max_decay_steps=[int(num_training_steps * 0.85)]
+            warm_up_steps=num_warmup_steps,
+            lr_min=1.0,
+            lr_max=1.0,
+            lr_start=1.e-6,
+            max_decay_steps=int(num_training_steps * 0.85)
         )
         scheduler = LambdaLR(optimizer, lr_lambda=scheduler_.schedule, last_epoch=last_epoch)
     else:
+        extra = {} if num_cycles is None else {"num_cycles": num_cycles}
         scheduler = get_scheduler(
             name=name,
             optimizer=optimizer,
             step_rules=step_rules,
             num_warmup_steps=num_warmup_steps,
             num_training_steps=num_training_steps,
-            num_cycles=num_cycles,
             power=power,
-            last_epoch=last_epoch
+            last_epoch=last_epoch,
+            **extra,
         )
     return scheduler
