@@ -32,7 +32,7 @@ back into the diffusion features. Injecting geometry in *feature* space avoids
 the view-dependent color noise that degrades structural consistency when
 rendered images are injected at the input level.
 
-**Adaptive fusion that knows when to trust geometry.** A gating MLP predicts a
+**Adaptive Fusion that knows when to trust geometry.** A gating MLP predicts a
 per-pixel confidence weight from the diffusion and geometry features, so the
 prior is downweighted exactly where it is unreliable — reflective or occluded
 regions.
@@ -119,8 +119,8 @@ bash tools/scripts/train_camctrl.sh configs/module_config/gsadapter_camctrl_gatt
 
 | Config | Fusion |
 |---|---|
-| `gsadapter_eccv_gattn.yaml` | adaptive (gated attention) — **final model** |
-| `gsadapter_eccv_base.yaml` | naive (concat) |
+| `gsadapter_eccv_gattn.yaml` | Adaptive Fusion (`fusion_method: gattn`) — **final model** |
+| `gsadapter_eccv_base.yaml` | Naive Fusion (`fusion_method: concat`) |
 
 Defaults: DL3DV-10K, LoRA rank 16, lr 1e-5 (LoRA) / 5e-5 (adapter), 100k steps,
 bf16, per-GPU batch 1. LoRA and GS-Adapter weights are exported next to every

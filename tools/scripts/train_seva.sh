@@ -3,8 +3,8 @@
 # Reproduces the main paper results (DL3DV, 21 frames, 384x384, 8 GPUs).
 #
 # Variants:
-#   configs/module_config/gsadapter_eccv_base.yaml   : concat fusion (base)
-#   configs/module_config/gsadapter_eccv_gattn.yaml  : gated-attention fusion
+#   configs/module_config/gsadapter_eccv_base.yaml   : Naive Fusion
+#   configs/module_config/gsadapter_eccv_gattn.yaml  : Adaptive Fusion
 
 CONFIG=${1:-configs/module_config/gsadapter_eccv_gattn.yaml}
 OUTPUT_DIR=${2:-outputs_seva_$(basename ${CONFIG%.yaml})}

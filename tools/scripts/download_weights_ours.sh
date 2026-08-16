@@ -8,8 +8,8 @@ mkdir -p pretrained_weights
 
 # ---------------------------------------------------------------------------
 # GeoNVS trained weights (GS-Adapter + LoRA)
-#   eccv_gattn   : SEVA backbone, gated-attention fusion (main results)
-#   eccv_base    : SEVA backbone, concat-FeedForward fusion (ablation)
+#   eccv_gattn   : SEVA backbone, Adaptive Fusion (main results)
+#   eccv_base    : SEVA backbone, Naive Fusion (ablation)
 #   eccv_camctrl : CameraCtrl backbone
 # ---------------------------------------------------------------------------
 mkdir -p pretrained_weights/eccv_gattn

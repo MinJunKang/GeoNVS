@@ -8,7 +8,7 @@
 #               configs/module_config/gsadapter_eccv_gattn_k<k>.yaml)
 #   pruning     voxel-based Gaussian pruning (voxel size sweep)
 #   cfg         classifier-free guidance scale sweep
-#   fusion      naive (concat) vs adaptive (gated attention) fusion
+#   fusion      Naive Fusion vs Adaptive Fusion
 #   geometry    plug-and-play geometry models with the same adapter
 #
 # Default target is dl3dv10:3 (the ablation set used in the paper).
