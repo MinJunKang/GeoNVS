@@ -71,6 +71,9 @@ HuggingFace Hub on first run — accept their licenses first.
 
 ## 🚀 Quick start
 
+`demo.py` runs GeoNVS over a benchmark split and scores it — it is the
+evaluation entry point, not a single-scene demo:
+
 ```bash
 python demo.py --data_path <benchmarkset>/dl3dv10 --num_inputs 3 \
     --gs_adapter_config configs/module_config/gsadapter_eccv_gattn.yaml \
@@ -83,7 +86,13 @@ Outputs land in `work_dirs_*/` with rendered frames, videos, per-scene
 
 ## 📊 Evaluation
 
-Runners that reproduce the paper's tables (384×384 protocol) live in
+Evaluation runs through the `demo_*.py` entry points — `demo.py` for GeoNVS and
+the SEVA backbone, `demo_regression.py` for a geometry prior on its own, and
+`demo_diffusion.py` for the video-diffusion baselines. Each writes rendered
+frames and metrics for a whole benchmark split, so they are the evaluation
+scripts rather than single-scene demos.
+
+The runners that drive them over the paper's tables (384×384 protocol) live in
 [`tools/scripts/eval/`](tools/scripts/eval/):
 
 ```bash
@@ -97,10 +106,9 @@ Multiple GPUs shard the benchmark table and run in parallel.
 
 `--lrm_model_name` selects the geometry prior: `vggt_iv` / `vggt_av` /
 `pi3_iv` / `pi3_av` (precomputed) or on-the-fly `depthsplat`, `mvsplat`,
-`hisplat`, `mvsplat360`, `da3`. `demo_regression.py` evaluates geometry models
-alone, and `demo_diffusion.py` the video-diffusion baselines
-(`--dm_model_name cameractrl | motionctrl | viewcrafter | mvsplat360 |
-genfusion_<lrm> | difix3d_<lrm> | geonvs_cameractrl_<lrm>`).
+`hisplat`, `mvsplat360`, `da3`. The baselines are chosen with
+`--dm_model_name cameractrl | motionctrl | viewcrafter | mvsplat360 |
+genfusion_<lrm> | difix3d_<lrm> | geonvs_cameractrl_<lrm>`.
 
 Geometry-fidelity metrics (camera pose error, Chamfer distance) use the ViPE
 pipeline in [`tools/geometry_eval/`](tools/geometry_eval/). The benchmark data
@@ -154,9 +162,10 @@ benchmark geometry priors used at evaluation time.
 ```
 GeoNVS/
 ├── train_seva.py  train_camctrl.py     # training entry points
-├── demo.py                             # GeoNVS (and the SEVA backbone alone)
-├── demo_regression.py                  # a geometry prior alone, no diffusion
-├── demo_diffusion.py                   # video-diffusion baselines
+│                                       # evaluation entry points (demo_*.py):
+├── demo.py                             #   GeoNVS, and the SEVA backbone alone
+├── demo_regression.py                  #   a geometry prior alone, no diffusion
+├── demo_diffusion.py                   #   video-diffusion baselines
 ├── configs/                            # adapter / backbone / accelerate configs
 ├── geonvs/                             # our model
 │   ├── adapter_core/                   # GS-Adapter (lifting, refine, fusion)
