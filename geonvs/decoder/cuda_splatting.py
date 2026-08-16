@@ -81,7 +81,16 @@ def render_cuda(
     _, _, _, n = gaussian_sh_coefficients.shape
     degree = math.isqrt(n) - 1
     
-    shs = rearrange(gaussian_sh_coefficients, "b g xyz n -> b g n xyz").contiguous()
+    # The caller broadcasts one set of gaussians across the target views, so the
+    # batch axis usually has stride 0. Making that contiguous would materialise
+    # one full copy of the SH coefficients per view (gigabytes for a dense
+    # geometry model), so transpose the single underlying copy and re-expand;
+    # the rasterizer only ever indexes shs[i], which stays contiguous.
+    if gaussian_sh_coefficients.shape[0] > 1 and gaussian_sh_coefficients.stride(0) == 0:
+        shs = rearrange(gaussian_sh_coefficients[:1], "b g xyz n -> b g n xyz").contiguous()
+        shs = shs.expand(gaussian_sh_coefficients.shape[0], -1, -1, -1)
+    else:
+        shs = rearrange(gaussian_sh_coefficients, "b g xyz n -> b g n xyz").contiguous()
 
     b, _, _ = extrinsics.shape
     h, w = image_shape
@@ -196,7 +205,16 @@ def render_count(
         near = near * scale
         far = far * scale
         
-    shs = rearrange(gaussian_sh_coefficients, "b g xyz n -> b g n xyz").contiguous()
+    # The caller broadcasts one set of gaussians across the target views, so the
+    # batch axis usually has stride 0. Making that contiguous would materialise
+    # one full copy of the SH coefficients per view (gigabytes for a dense
+    # geometry model), so transpose the single underlying copy and re-expand;
+    # the rasterizer only ever indexes shs[i], which stays contiguous.
+    if gaussian_sh_coefficients.shape[0] > 1 and gaussian_sh_coefficients.stride(0) == 0:
+        shs = rearrange(gaussian_sh_coefficients[:1], "b g xyz n -> b g n xyz").contiguous()
+        shs = shs.expand(gaussian_sh_coefficients.shape[0], -1, -1, -1)
+    else:
+        shs = rearrange(gaussian_sh_coefficients, "b g xyz n -> b g n xyz").contiguous()
 
     # infer SH degree from the number of coefficients (supports LRM heads with
     # degree != 3)
