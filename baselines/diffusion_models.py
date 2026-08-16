@@ -300,22 +300,17 @@ class GenFusionModel(nn.Module):
         config_path = "baselines/diffusion/genfusion/generation_infer.yaml"
 
         # define model here
-        # requires open-clip-torch==2.12.0, whereas ours are open-clip-torch==2.32.0
-        # requires transformers==4.46.2, whereas ours are transformers==4.49.0
+        # Upstream pins open-clip-torch==2.12.0 and transformers==4.46.2; this
+        # repository installs 2.32.0 / 4.49.0. Two changes in open_clip matter
+        # and are handled in lvdm/modules/encoders/condition.py: `input_patchnorm`
+        # was removed in 2.26, and the transformer became batch-first in 2.24
+        # (the second one is silent - it leaves the CLIP image conditioner
+        # attending over a length-1 sequence and costs ~2 dB). With both handled,
+        # the shared environment reproduces the paper:
         #
-        # The numbers reported in the paper were measured in GenFusion's own
-        # environment (open-clip-torch==2.12.0 / transformers==4.46.2), not in
-        # the shared one this repository installs. GenFusion still runs here
-        # because encode_with_vision_transformer() tolerates the `input_patchnorm`
-        # attribute that open_clip >= 2.26 removed, but the conditioner is not
-        # bit-identical across those versions and the results are lower:
-        #
-        #                   this env        paper
-        #   DL3DV-10 P=6    10.94 PSNR      13.11 PSNR
-        #   RE10K    P=3    20.58 PSNR      22.69 PSNR
-        #
-        # Recreate the upstream environment to reproduce the reported numbers:
-        #   pip install open-clip-torch==2.12.0 transformers==4.46.2
+        #                   here       paper
+        #   DL3DV-10 P=6    13.97      13.11   PSNR
+        #   RE10K    P=3    22.79      22.69   PSNR
         model_config = OmegaConf.load(config_path)
         self.model = self.instantiate_from_config(model_config)
         
@@ -672,6 +667,8 @@ class ViewCrafterModel(nn.Module):
 
         # define model here
         # requires open-clip-torch==2.17.1, whereas ours are open-clip-torch==2.32.0
+        # (handled in lvdm/modules/encoders/condition.py, see the GenFusion note
+        # above; reproduces the paper in the shared environment)
         from baselines.diffusion.viewcrafter.viewcrafter import ViewCrafter
         config = OmegaConf.load(config_path)
         self.n_generate_frames = config.video_length

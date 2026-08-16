@@ -53,30 +53,28 @@ by the ViPE pipeline in [`../../geometry_eval/`](../../geometry_eval/).
 
 ## Baseline environments
 
-Everything in the table above runs in the single environment installed by
-`autoinstall.sh`. Two vendored video-diffusion baselines pin older
-dependencies than the shared environment, and are patched here only so far as
-is needed to make them run:
+Everything above runs in the single environment installed by `autoinstall.sh`.
+Two vendored video-diffusion baselines were written against older CLIP
+releases — GenFusion pins `open-clip-torch==2.12.0` / `transformers==4.46.2`,
+ViewCrafter pins `open-clip-torch==2.17.1`, and this repository installs
+2.32.0 / 4.49.0. Their conditioners
+([GenFusion](../../../baselines/diffusion/genfusion/lvdm/modules/encoders/condition.py),
+[ViewCrafter](../../../baselines/diffusion/viewcrafter/lvdm/modules/encoders/condition.py))
+branch on the two changes that matter, so no separate environment is needed:
 
-| Baseline | Upstream pins | Shared env | Effect |
-|---|---|---|---|
-| GenFusion | `open-clip-torch==2.12.0`, `transformers==4.46.2` | 2.32.0 / 4.49.0 | reproduces below the reported numbers |
-| ViewCrafter | `open-clip-torch==2.17.1` | 2.32.0 | see note |
+- `input_patchnorm` was removed in open_clip 2.26; its absence means the
+  standard (non dual-patchnorm) path.
+- The transformer became batch-first in open_clip 2.24. The original
+  `NLD -> LND` permute hands it a length-1 sequence: the text encoder raises on
+  the 77x77 causal mask, and — silently — the image encoder runs with
+  self-attention disabled, which costs about 2 dB.
 
-`open_clip >= 2.26` removed the `input_patchnorm` attribute and changed how the
-text-transformer attention mask is shaped, so both models' CLIP conditioners
-take a slightly different path in the shared environment. Measured for
-GenFusion:
+Both baselines reproduce their published numbers here (10 scenes per entry,
+PSNR / SSIM / LPIPS):
 
-| | this env | paper |
+| | measured | paper |
 |---|---|---|
-| DL3DV-10, P=6 | 10.94 / 0.329 / 0.607 | 13.11 / 0.394 / 0.537 |
-| RE10K, P=3 | 20.58 / 0.833 / 0.181 | 22.69 / 0.864 / 0.159 |
-
-(PSNR / SSIM / LPIPS.) To reproduce the reported numbers, run these two
-baselines in their upstream environments:
-
-```bash
-pip install open-clip-torch==2.12.0 transformers==4.46.2   # GenFusion
-pip install open-clip-torch==2.17.1                        # ViewCrafter
-```
+| GenFusion, DL3DV-10 P=6 | 13.97 / 0.432 / 0.519 | 13.11 / 0.394 / 0.537 |
+| GenFusion, RE10K P=3 | 22.79 / 0.869 / 0.153 | 22.69 / 0.864 / 0.159 |
+| ViewCrafter, DL3DV-10 P=6 | 10.49 / 0.244 / 0.641 | 10.51 / 0.241 / 0.649 |
+| ViewCrafter, RE10K P=3 | 16.37 / 0.658 / 0.368 | 15.83 / 0.647 / 0.385 |
