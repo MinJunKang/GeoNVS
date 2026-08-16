@@ -73,24 +73,21 @@ def render_cuda(
         scale = 1 / near
         extrinsics = extrinsics.clone()
         extrinsics[..., :3, 3] = extrinsics[..., :3, 3] * scale[:, None]
-        gaussian_covariances = gaussian_covariances * (scale[:, None, None, None] ** 2)
-        gaussian_means = gaussian_means * scale[:, None, None]
         near = near * scale
         far = far * scale
+    else:
+        scale = None
+
+    # One set of gaussians is shared by all the target views of a scene. The
+    # caller may hand them over unexpanded (batch g_b, with b = g_b * views);
+    # index them separately rather than making it materialise b copies, which
+    # for a dense geometry model runs into gigabytes per rendered view.
+    views_per_scene = extrinsics.shape[0] // gaussian_means.shape[0]
 
     _, _, _, n = gaussian_sh_coefficients.shape
     degree = math.isqrt(n) - 1
     
-    # The caller broadcasts one set of gaussians across the target views, so the
-    # batch axis usually has stride 0. Making that contiguous would materialise
-    # one full copy of the SH coefficients per view (gigabytes for a dense
-    # geometry model), so transpose the single underlying copy and re-expand;
-    # the rasterizer only ever indexes shs[i], which stays contiguous.
-    if gaussian_sh_coefficients.shape[0] > 1 and gaussian_sh_coefficients.stride(0) == 0:
-        shs = rearrange(gaussian_sh_coefficients[:1], "b g xyz n -> b g n xyz").contiguous()
-        shs = shs.expand(gaussian_sh_coefficients.shape[0], -1, -1, -1)
-    else:
-        shs = rearrange(gaussian_sh_coefficients, "b g xyz n -> b g n xyz").contiguous()
+    shs = rearrange(gaussian_sh_coefficients, "b g xyz n -> b g n xyz").contiguous()
 
     b, _, _ = extrinsics.shape
     h, w = image_shape
@@ -112,8 +109,15 @@ def render_cuda(
     all_features = []
     for i in range(b):
         
+        gi = i // views_per_scene
+        means_i = gaussian_means[gi]
+        covariances_i = gaussian_covariances[gi]
+        if scale is not None:
+            means_i = means_i * scale[i]
+            covariances_i = covariances_i * (scale[i] ** 2)
+
         # Set up a tensor for the gradients of the screen-space means.
-        mean_gradients = torch.zeros_like(gaussian_means[i], requires_grad=True, device=gaussian_means[i].device) + 0.
+        mean_gradients = torch.zeros_like(means_i, requires_grad=True, device=means_i.device) + 0.
         try:
             mean_gradients.retain_grad()
         except Exception:
@@ -146,13 +150,13 @@ def render_cuda(
         rasterizer = GaussianRasterizer(settings)
 
         image, depth, feature, radii = rasterizer(
-            means3D=gaussian_means[i],
+            means3D=means_i,
             means2D=mean_gradients,
-            shs=shs[i] if use_sh else None,
-            colors_precomp=None if use_sh else shs[i, :, 0, :],
-            opacities=gaussian_opacities[i, ..., None],
-            cov3D_precomp=gaussian_covariances[i, :, row, col],
-            feature_precomp=gaussian_features[i] if (gaussian_features is not None) and render_feature else None,
+            shs=shs[gi] if use_sh else None,
+            colors_precomp=None if use_sh else shs[gi, :, 0, :],
+            opacities=gaussian_opacities[gi, ..., None],
+            cov3D_precomp=covariances_i[:, row, col],
+            feature_precomp=gaussian_features[gi] if (gaussian_features is not None) and render_feature else None,
         )
         
         if render_color:
@@ -200,21 +204,18 @@ def render_count(
         scale = 1 / near
         extrinsics = extrinsics.clone()
         extrinsics[..., :3, 3] = extrinsics[..., :3, 3] * scale[:, None]
-        gaussian_covariances = gaussian_covariances * (scale[:, None, None, None] ** 2)
-        gaussian_means = gaussian_means * scale[:, None, None]
         near = near * scale
         far = far * scale
-        
-    # The caller broadcasts one set of gaussians across the target views, so the
-    # batch axis usually has stride 0. Making that contiguous would materialise
-    # one full copy of the SH coefficients per view (gigabytes for a dense
-    # geometry model), so transpose the single underlying copy and re-expand;
-    # the rasterizer only ever indexes shs[i], which stays contiguous.
-    if gaussian_sh_coefficients.shape[0] > 1 and gaussian_sh_coefficients.stride(0) == 0:
-        shs = rearrange(gaussian_sh_coefficients[:1], "b g xyz n -> b g n xyz").contiguous()
-        shs = shs.expand(gaussian_sh_coefficients.shape[0], -1, -1, -1)
     else:
-        shs = rearrange(gaussian_sh_coefficients, "b g xyz n -> b g n xyz").contiguous()
+        scale = None
+
+    # One set of gaussians is shared by all the target views of a scene. The
+    # caller may hand them over unexpanded (batch g_b, with b = g_b * views);
+    # index them separately rather than making it materialise b copies, which
+    # for a dense geometry model runs into gigabytes per rendered view.
+    views_per_scene = extrinsics.shape[0] // gaussian_means.shape[0]
+        
+    shs = rearrange(gaussian_sh_coefficients, "b g xyz n -> b g n xyz").contiguous()
 
     # infer SH degree from the number of coefficients (supports LRM heads with
     # degree != 3)
@@ -241,8 +242,15 @@ def render_count(
     gs_indices, gs_weights = [], []
     for i in range(b):
         
+        gi = i // views_per_scene
+        means_i = gaussian_means[gi]
+        covariances_i = gaussian_covariances[gi]
+        if scale is not None:
+            means_i = means_i * scale[i]
+            covariances_i = covariances_i * (scale[i] ** 2)
+
         # Set up a tensor for the gradients of the screen-space means.
-        mean_gradients = torch.zeros_like(gaussian_means[i], requires_grad=True, device=gaussian_means[i].device) + 0.
+        mean_gradients = torch.zeros_like(means_i, requires_grad=True, device=means_i.device) + 0.
         try:
             mean_gradients.retain_grad()
         except Exception:
@@ -268,12 +276,12 @@ def render_count(
         rasterizer = GaussianRasterizer(settings)
 
         gsindex, gsweight, image, depth, radii = rasterizer(
-            means3D=gaussian_means[i],
+            means3D=means_i,
             means2D=mean_gradients,
-            shs=shs[i] if use_sh else None,
-            colors_precomp=None if use_sh else shs[i, :, 0, :],
-            opacities=gaussian_opacities[i, ..., None],
-            cov3D_precomp=gaussian_covariances[i, :, row, col],
+            shs=shs[gi] if use_sh else None,
+            colors_precomp=None if use_sh else shs[gi, :, 0, :],
+            opacities=gaussian_opacities[gi, ..., None],
+            cov3D_precomp=covariances_i[:, row, col],
         )
         
         if render_color:
@@ -323,10 +331,16 @@ def render_uncertainty_cuda(
         scale = 1 / near
         extrinsics = extrinsics.clone()
         extrinsics[..., :3, 3] = extrinsics[..., :3, 3] * scale[:, None]
-        gaussian_covariances = gaussian_covariances * (scale[:, None, None, None] ** 2)
-        gaussian_means = gaussian_means * scale[:, None, None]
         near = near * scale
         far = far * scale
+    else:
+        scale = None
+
+    # One set of gaussians is shared by all the target views of a scene. The
+    # caller may hand them over unexpanded (batch g_b, with b = g_b * views);
+    # index them separately rather than making it materialise b copies, which
+    # for a dense geometry model runs into gigabytes per rendered view.
+    views_per_scene = extrinsics.shape[0] // gaussian_means.shape[0]
 
     b, _, _ = extrinsics.shape
     h, w = image_shape
@@ -348,10 +362,16 @@ def render_uncertainty_cuda(
     all_depths = []
     all_features = []
     for i in range(b):
-        mask = ~mask_invalid[i]
+        gi = i // views_per_scene
+        mask = ~mask_invalid[gi]
+        means_i = gaussian_means[gi]
+        covariances_i = gaussian_covariances[gi]
+        if scale is not None:
+            means_i = means_i * scale[i]
+            covariances_i = covariances_i * (scale[i] ** 2)
         
         # Set up a tensor for the gradients of the screen-space means.
-        mean_gradients = torch.zeros_like(gaussian_means[i][mask], requires_grad=True, device=gaussian_means[i].device) + 0.
+        mean_gradients = torch.zeros_like(means_i[mask], requires_grad=True, device=means_i.device) + 0.
         try:
             mean_gradients.retain_grad()
         except Exception:
@@ -377,12 +397,12 @@ def render_uncertainty_cuda(
         rasterizer = GaussianRasterizer(settings)
 
         image, depth, feature, radii = rasterizer(
-            means3D=gaussian_means[i][mask],
+            means3D=means_i[mask],
             means2D=mean_gradients,
-            colors_precomp=color_precomp[i][mask],
-            opacities=gaussian_opacities[i, ..., None][mask],
-            cov3D_precomp=gaussian_covariances[i, :, row, col][mask],
-            feature_precomp=gaussian_features[i][mask] if (gaussian_features is not None) and render_feature else None,
+            colors_precomp=color_precomp[gi][mask],
+            opacities=gaussian_opacities[gi, ..., None][mask],
+            cov3D_precomp=covariances_i[:, row, col][mask],
+            feature_precomp=gaussian_features[gi][mask] if (gaussian_features is not None) and render_feature else None,
         )
         
         all_images.append(image)

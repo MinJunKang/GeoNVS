@@ -46,8 +46,11 @@ class DecoderSplattingCUDA(Decoder):
     ) -> DecoderOutput:
         b, v, _, _ = extrinsics.shape
         background_color = self.background_color.to(dtype=extrinsics.dtype)
-        if gaussian_features is not None:
-            gaussian_features = repeat(gaussian_features, "b g c -> (b v) g c", v=v)
+
+        # The gaussians are shared by all the target views of a scene, and the
+        # renderers index them per scene, so they are passed through unexpanded:
+        # broadcasting them to (b v) here would cost one full copy per rendered
+        # view, which for a dense geometry model runs to several GB.
             
         if render_gsindex:
             gsindex, gsweight, color, depth = render_count(
@@ -57,10 +60,10 @@ class DecoderSplattingCUDA(Decoder):
                 far=rearrange(far, "b v -> (b v)"),
                 image_shape=image_shape,
                 background_color=repeat(background_color, "c -> (b v) c", b=b, v=v),
-                gaussian_means=repeat(gaussians.means, "b g xyz -> (b v) g xyz", v=v),
-                gaussian_covariances=repeat(gaussians.covariances, "b g i j -> (b v) g i j", v=v),
-                gaussian_sh_coefficients=repeat(gaussians.harmonics, "b g c d_sh -> (b v) g c d_sh", v=v),
-                gaussian_opacities=repeat(gaussians.opacities, "b g -> (b v) g", v=v),
+                gaussian_means=gaussians.means,
+                gaussian_covariances=gaussians.covariances,
+                gaussian_sh_coefficients=gaussians.harmonics,
+                gaussian_opacities=gaussians.opacities,
                 scale_invariant=scale_invariant,
                 render_color=render_color,
                 render_depth=render_depth,
@@ -88,11 +91,11 @@ class DecoderSplattingCUDA(Decoder):
                     far=rearrange(far, "b v -> (b v)"),
                     image_shape=image_shape,
                     background_color=repeat(background_color, "c -> (b v) c", b=b, v=v),
-                    gaussian_means=repeat(gaussians.means, "b g xyz -> (b v) g xyz", v=v),
-                    gaussian_covariances=repeat(gaussians.covariances, "b g i j -> (b v) g i j", v=v),
-                    gaussian_opacities=repeat(gaussians.opacities, "b g -> (b v) g", v=v),
-                    gaussian_fishers=repeat(fishers_score, "b g -> (b v) g", v=v),
-                    mask_invalid=repeat(mask_invalid, "b g -> (b v) g", v=v),
+                    gaussian_means=gaussians.means,
+                    gaussian_covariances=gaussians.covariances,
+                    gaussian_opacities=gaussians.opacities,
+                    gaussian_fishers=fishers_score,
+                    mask_invalid=mask_invalid,
                     gaussian_features=gaussian_features,
                     scale_invariant=scale_invariant,
                     render_feature=render_feature,
@@ -115,10 +118,10 @@ class DecoderSplattingCUDA(Decoder):
                     far=rearrange(far, "b v -> (b v)"),
                     image_shape=image_shape,
                     background_color=repeat(background_color, "c -> (b v) c", b=b, v=v),
-                    gaussian_means=repeat(gaussians.means, "b g xyz -> (b v) g xyz", v=v),
-                    gaussian_covariances=repeat(gaussians.covariances, "b g i j -> (b v) g i j", v=v),
-                    gaussian_sh_coefficients=repeat(gaussians.harmonics, "b g c d_sh -> (b v) g c d_sh", v=v),
-                    gaussian_opacities=repeat(gaussians.opacities, "b g -> (b v) g", v=v),
+                    gaussian_means=gaussians.means,
+                    gaussian_covariances=gaussians.covariances,
+                    gaussian_sh_coefficients=gaussians.harmonics,
+                    gaussian_opacities=gaussians.opacities,
                     gaussian_features=gaussian_features,
                     scale_invariant=scale_invariant,
                     render_color=render_color,
