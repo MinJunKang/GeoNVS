@@ -27,6 +27,19 @@ from the HuggingFace Hub on first use. A CUDA GPU is required.
 
 ## 1. Training data (`process_dataset.py`)
 
+<p align="center">
+  <img src="../assets/datapreprocess_training.png" width="100%">
+</p>
+
+Each multi-view video (~300 frames) is cut into clips of 21 images by the view
+selection algorithm: anchors are picked from a pose-distance graph, neighbours
+are added per anchor by K-means centroids, and pairs whose frustum IoU falls
+below 40% are dropped. Every clip is then lifted to a point cloud by VGGT with
+scale alignment and refined into 3D Gaussians by a short InstantSplat-style
+optimization. Novel views take part in building the point cloud (training data
+only) but are excluded from the saved Gaussians, so the prior never leaks the
+targets the model has to synthesize. DL3DV yields roughly 150K clips this way.
+
 ### Input
 
 [pixelSplat](https://github.com/dcharatan/pixelsplat)-style chunked datasets,

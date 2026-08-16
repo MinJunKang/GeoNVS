@@ -11,7 +11,14 @@ Minjun Kang<sup>1</sup>, Inkyu Shin<sup>2</sup>, Taeyeop Lee<sup>1</sup>, Myungc
 
 <sup>1</sup>KAIST, South Korea &nbsp;&nbsp; <sup>2</sup>Luma AI, USA
 
+<img src="assets/geonvs_method.png" width="88%">
+
 </div>
+
+The GS-Adapter reconstructs 3D Gaussians from the input views, uplifts the
+diffusion features onto them, and renders them into every target view, so the
+backbone is conditioned on geometry in feature space. Only the adapter and the
+LoRA layers are trained.
 
 ---
 
