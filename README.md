@@ -16,9 +16,9 @@ Minjun Kang<sup>1</sup>, Inkyu Shin<sup>2</sup>, Taeyeop Lee<sup>1</sup>, Myungc
 </div>
 
 The GS-Adapter reconstructs 3D Gaussians from the input views, uplifts the
-diffusion features onto them, and renders them into every target view, so the
-backbone is conditioned on geometry in feature space. Only the adapter and the
-LoRA layers are trained.
+diffusion features onto them, and renders them into every target view, so every
+denoising step is guided by the 3D-GS enhanced feature. Only the adapter and the
+LoRA layers are trained; the diffusion backbone stays frozen.
 
 ---
 
