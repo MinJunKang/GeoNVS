@@ -154,7 +154,9 @@ benchmark geometry priors used at evaluation time.
 ```
 GeoNVS/
 ├── train_seva.py  train_camctrl.py     # training entry points
-├── demo.py  demo_regression.py  demo_diffusion.py
+├── demo.py                             # GeoNVS (and the SEVA backbone alone)
+├── demo_regression.py                  # a geometry prior alone, no diffusion
+├── demo_diffusion.py                   # video-diffusion baselines
 ├── configs/                            # adapter / backbone / accelerate configs
 ├── geonvs/                             # our model
 │   ├── adapter_core/                   # GS-Adapter (lifting, refine, fusion)
@@ -164,7 +166,8 @@ GeoNVS/
 ├── baselines/                          # third-party geometry / diffusion models
 │   ├── lrm_models.py                   # geometry-model dispatch (also used by GeoNVS)
 │   ├── diffusion_models.py             # video-diffusion baseline dispatch
-│   └── lrm/  diffusion/                # vendored upstream sources
+│   ├── lrm/                            # geometry prior models (vendored)
+│   └── diffusion/                      # diffusion methods for comparison (vendored)
 ├── datapreprocess/                     # training data + benchmark geometry priors
 ├── third_party/                        # CUDA extensions, ViPE submodule
 └── tools/                              # eval runners, geometry metrics, benchmark
