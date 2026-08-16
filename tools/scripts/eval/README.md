@@ -10,7 +10,7 @@ Run everything from the repository root.
 | Script | Purpose |
 |---|---|
 | `benchmark.sh` | Dataset × reference-view table (Tables 1–2) + shared defaults. Sourced by the runners, not executed directly. |
-| `eval_geonvs.sh` | GeoNVS (SEVA + GS-Adapter + LoRA) — main results |
+| `eval_geonvs.sh` | GeoNVS (SEVA + GS-Adapter + LoRA), main results |
 | `eval_baseline.sh` | SEVA, input-level injection, feed-forward geometry, diffusion baselines |
 | `eval_long.sh` | Long-trajectory protocol (trajectory prior + `nearest-gt` chunking + voxel pruning) |
 | `eval_ablation.sh` | top-k / voxel pruning / CFG / fusion / geometry-model ablations |
@@ -55,7 +55,7 @@ by the ViPE pipeline in [`../../geometry_eval/`](../../geometry_eval/).
 
 Everything above runs in the single environment installed by `autoinstall.sh`.
 Two vendored video-diffusion baselines were written against older CLIP
-releases — GenFusion pins `open-clip-torch==2.12.0` / `transformers==4.46.2`,
+releases. GenFusion pins `open-clip-torch==2.12.0` / `transformers==4.46.2`,
 ViewCrafter pins `open-clip-torch==2.17.1`, and this repository installs
 2.32.0 / 4.49.0. Their conditioners
 ([GenFusion](../../../baselines/diffusion/genfusion/lvdm/modules/encoders/condition.py),
@@ -66,7 +66,7 @@ branch on the two changes that matter, so no separate environment is needed:
   standard (non dual-patchnorm) path.
 - The transformer became batch-first in open_clip 2.24. The original
   `NLD -> LND` permute hands it a length-1 sequence: the text encoder raises on
-  the 77x77 causal mask, and — silently — the image encoder runs with
+  the 77x77 causal mask, and, silently, the image encoder runs with
   self-attention disabled, which costs about 2 dB.
 
 Both baselines reproduce their published numbers here (10 scenes per entry,

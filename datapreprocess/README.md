@@ -1,14 +1,14 @@
-# GeoNVS data generation
+# Data Preprocess Guideline for GeoNVS
 
 Two pipelines share this directory. Both lift posed images into 3D Gaussians
 with a geometry foundation model, refine them with a short per-scene 3DGS
-optimization, and attach per-Gaussian Fisher information — the geometry prior
-the GS-Adapter consumes.
+optimization, and attach per-Gaussian Fisher information, which together form
+the geometry prior the GS-Adapter consumes.
 
 | Script | Produces | Consumed by |
 |---|---|---|
-| `process_dataset.py` | **training data** — `<stage>_gs/*.safetensors` for RE10K / DL3DV | `geonvs/data/{dl3dv,re10k}.py` during `train_seva.py` / `train_camctrl.py` |
-| `process_benchmark.py` | **benchmark priors** — `<scene>/{vggt,pi3,mapanything}_{iv,av}/*.safetensors` | `--lrm_model_name vggt_iv / pi3_iv / …` in `demo.py`, `demo_regression.py`, `demo_diffusion.py` |
+| `process_dataset.py` | **training data**: `<stage>_gs/*.safetensors` for RE10K / DL3DV | `geonvs/data/{dl3dv,re10k}.py` during `train_seva.py` / `train_camctrl.py` |
+| `process_benchmark.py` | **benchmark priors**: `<scene>/{vggt,pi3,mapanything}_{iv,av}/*.safetensors` | `--lrm_model_name vggt_iv / pi3_iv / …` in `demo.py`, `demo_regression.py`, `demo_diffusion.py` |
 
 The CUDA rasterizers and the Gaussian decoder are shared with the training /
 evaluation stack (`../third_party`, `../geonvs/decoder`), so everything runs in
@@ -31,7 +31,7 @@ from the HuggingFace Hub on first use. A CUDA GPU is required.
 
 [pixelSplat](https://github.com/dcharatan/pixelsplat)-style chunked datasets,
 as released by pixelSplat (RE10K) and DepthSplat (DL3DV). This repository does
-not re-implement that conversion — download the chunks from those projects and
+not re-implement that conversion, so download the chunks from those projects and
 lay them out as:
 
 ```
@@ -64,7 +64,7 @@ Chunks are independent, so N GPUs can process N disjoint `--start_index /
 exist (`--overwrite` forces regeneration).
 
 Useful options: `--highres` (use `*_high`), `--num_group_images` (views per
-sample, default 21 — must match `--num_frames` in training),
+sample, default 21, must match `--num_frames` in training),
 `--num_input_images` (reference-view counts, default `1 3 6 9 12`),
 `--num_input_variations`, `--min_frustum_iou_threshold`,
 `--adjacent_frame_sampling_rate`, `--no_confidence` (skip Fisher; **not**
@@ -108,11 +108,11 @@ CUDA_VISIBLE_DEVICES=0 python process_benchmark.py \
     --data_root /path/to/benchmarkset --dataset dl3dv10 --models vggt pi3
 ```
 
-- `--models vggt pi3 mapanything` — geometry backbone(s); one output folder each.
-- `--include_target` — reconstruct from reference **and** target views
+- `--models vggt pi3 mapanything`: geometry backbone(s); one output folder each.
+- `--include_target`: reconstruct from reference **and** target views
   (`*_av` folders). Without it only reference views are used (`*_iv`), which is
   the setting used for the paper's evaluation.
-- `--no_confidence` — skip Fisher information. **Do not use for evaluation**:
+- `--no_confidence`: skip Fisher information. **Do not use for evaluation**:
   the renderer expects the 95-channel layout with Fisher.
 
 Nested datasets take the sub-path, e.g. `--dataset wildrgbd/wildrgbd_hard`.
@@ -123,7 +123,7 @@ Nested datasets take the sub-path, e.g. `--dataset wildrgbd/wildrgbd_hard`.
 <benchmarkset>/<dataset>/<scene>/vggt_iv/<P>_<Q>.safetensors
 ```
 Same keys as above, but `gaussians` keeps a leading batch dimension
-`(1, N, 95)` — this is what `GaussianModelWrapper` in
+`(1, N, 95)`, which is what `GaussianModelWrapper` in
 `baselines/lrm_models.py` expects. One file per `train_test_split_<P>.json`.
 
 Evaluate with the matching name, e.g.
@@ -133,25 +133,25 @@ Evaluate with the matching name, e.g.
 
 ## How it works
 
-1. **View selection** (`view_selector.py`, training only) — builds a pose-distance
+1. **View selection** (`view_selector.py`, training only) builds a pose-distance
    graph, samples anchors proportionally to degree, picks reference views by
    K-means, splits easy/hard combinations with a CLIP distance, and rejects
    combinations whose frustum IoU is below `--min_frustum_iou_threshold`.
    Benchmark scenes skip this: their splits are fixed by
    `train_test_split_<P>.json`.
-2. **Geometry** (`load_model.py`) — VGGT / Pi3 / MapAnything predict cameras and
+2. **Geometry** (`load_model.py`): VGGT / Pi3 / MapAnything predict cameras and
    depth; depth is aligned to the ground-truth poses (`geometry.py`) and
    unprojected into a point map, with co-visibility masks from the confidence
    maps.
-3. **Per-scene 3DGS** — Gaussians initialized from the point map are optimized
+3. **Per-scene 3DGS**: Gaussians initialized from the point map are optimized
    for 3000 iterations (InstantSplat-style, `scene_custom/`,
    `gaussian_renderer/`), with PUP Fisher-based pruning of 70% of the Gaussians
    at iteration 1000.
-4. **Fisher information** — 6×6 per-Gaussian Fisher matrices
+4. **Fisher information**: 6×6 per-Gaussian Fisher matrices
    (`../geonvs/decoder/fisher_metric.py`, `rasterization_and_pup_fisher`) are
    packed into the saved tensor and used by the GS-Adapter as a confidence
    signal.
-5. **Quality gate** — scenes whose reconstruction fails or produces non-finite
+5. **Quality gate**: scenes whose reconstruction fails or produces non-finite
    values are skipped and logged to `<dataset>_<stage>_failure.txt` /
    `<dataset>_<stage>_log.txt`.
 

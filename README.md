@@ -22,7 +22,7 @@ Minjun Kang<sup>1</sup>, Inkyu Shin<sup>2</sup>, Taeyeop Lee<sup>1</sup>, Myungc
 - [x] Pretrained GS-Adapter + LoRA weights ([HuggingFace](https://huggingface.co/HugMinjun/GeoNVS))
 - [x] Baseline comparison methods (geometry models and video-diffusion models)
 - [x] Geometry-fidelity metrics (ViPE camera pose error, Chamfer distance)
-- [ ] **Dataset preprocessing code** — being cleaned up, coming soon
+- [ ] **Dataset preprocessing code** (being cleaned up, coming soon)
 
 ## ✨ Highlights
 
@@ -34,12 +34,11 @@ rendered images are injected at the input level.
 
 **Adaptive Fusion that knows when to trust geometry.** A gating MLP predicts a
 per-pixel confidence weight from the diffusion and geometry features, so the
-prior is downweighted exactly where it is unreliable — reflective or occluded
-regions.
+prior is downweighted exactly where it is unreliable, such as reflective or
+occluded regions.
 
 **Plug-and-play with any geometry model.** The same trained adapter works with
-VGGT, Pi3, DepthSplat, MVSplat and others *without retraining*: we measure
-27.13 / 27.11 / 27.10 PSNR on RE10K with DepthSplat / VGGT / Pi3 priors.
+VGGT, Pi3, DepthSplat, MVSplat and others **without retraining**.
 
 **Backbone agnostic.** Demonstrated on both SEVA and CameraCtrl with 11.3% and
 14.9% improvements, up to 2× lower translation error and 7× lower Chamfer
@@ -67,11 +66,11 @@ bash tools/scripts/download_weights_all.sh    # + every comparison baseline (~55
 ```
 
 `stabilityai/stable-virtual-camera` (SEVA) and the SVD VAE are pulled from the
-HuggingFace Hub on first run — accept their licenses first.
+HuggingFace Hub on first run, so accept their licenses first.
 
 ## 🚀 Quick start
 
-`demo.py` runs GeoNVS over a benchmark split and scores it — it is the
+`demo.py` runs GeoNVS over a benchmark split and scores it. It is the
 evaluation entry point, not a single-scene demo:
 
 ```bash
@@ -86,7 +85,7 @@ Outputs land in `work_dirs_*/` with rendered frames, videos, per-scene
 
 ## 📊 Evaluation
 
-Evaluation runs through the `demo_*.py` entry points — `demo.py` for GeoNVS and
+Evaluation runs through the `demo_*.py` entry points: `demo.py` for GeoNVS and
 the SEVA backbone, `demo_regression.py` for a geometry prior on its own, and
 `demo_diffusion.py` for the video-diffusion baselines. Each writes rendered
 frames and metrics for a whole benchmark split, so they are the evaluation
@@ -118,7 +117,7 @@ format and a scene converter are documented in
 ## 🏋️ Training
 
 ```bash
-# SEVA backbone — main results (8 GPUs, 21 frames, 384x384)
+# SEVA backbone, main results (8 GPUs, 21 frames, 384x384)
 bash tools/scripts/train_seva.sh configs/module_config/gsadapter_eccv_gattn.yaml
 
 # CameraCtrl backbone (14 frames, 576x320)
@@ -127,17 +126,28 @@ bash tools/scripts/train_camctrl.sh configs/module_config/gsadapter_camctrl_gatt
 
 | Config | Fusion |
 |---|---|
-| `gsadapter_eccv_gattn.yaml` | Adaptive Fusion (`fusion_method: gattn`) — **final model** |
+| `gsadapter_eccv_gattn.yaml` | Adaptive Fusion (`fusion_method: gattn`), **final model** |
 | `gsadapter_eccv_base.yaml` | Naive Fusion (`fusion_method: concat`) |
 
 Defaults: DL3DV-10K, LoRA rank 16, lr 1e-5 (LoRA) / 5e-5 (adapter), 100k steps,
 bf16, per-GPU batch 1. LoRA and GS-Adapter weights are exported next to every
 checkpoint. See `python train_seva.py --help`.
 
-## 🗂️ Data
+## 🗂️ Data Preprocess
+
+GeoNVS never reads raw images alone: every scene comes with a precomputed
+Gaussian prior. Two pipelines in [`datapreprocess/`](datapreprocess/) produce
+them, and both follow the same recipe (a geometry foundation model lifts the
+posed images into 3D Gaussians, a short per-scene 3DGS optimization refines
+them, and Fisher information is attached per Gaussian):
+
+| Pipeline | Produces | Used by |
+|---|---|---|
+| `process_dataset.py` | training data, `<stage>_gs/*.safetensors` | `train_seva.py`, `train_camctrl.py` |
+| `process_benchmark.py` | benchmark priors, `<scene>/{vggt,pi3}_{iv,av}/*.safetensors` | `--lrm_model_name vggt_iv / pi3_iv / ...` at evaluation |
 
 Training expects [pixelSplat](https://github.com/dcharatan/pixelsplat)-style
-chunks plus precomputed Gaussian priors:
+chunks next to the priors:
 
 ```
 <base_folder>/dl3dv_low/
@@ -148,14 +158,18 @@ chunks plus precomputed Gaussian priors:
 ```
 
 Each prior stores `means(3) ⊕ rot(4) ⊕ scale(3) ⊕ opacity(1) ⊕ fisher(36) ⊕
-SH(48)`. The generation pipeline (VGGT/Pi3 → per-scene 3DGS with PUP pruning →
-Fisher information) lives in [`datapreprocess/`](datapreprocess/) and also produces the
-benchmark geometry priors used at evaluation time.
+SH(48)`.
+
+**➡️ Read [`datapreprocess/README.md`](datapreprocess/README.md)** for the full
+guideline: environment setup, the input layout and exact commands for each
+pipeline, what they write out, and a step-by-step walkthrough of view
+selection, geometry prediction, per-scene 3DGS with PUP pruning, and the Fisher
+information the GS-Adapter consumes (including runtime and sharding advice).
 
 > [!NOTE]
 > The dataset preprocessing code is still being cleaned up for release (see the
-> checklist above). [`datapreprocess/README.md`](datapreprocess/README.md) documents the
-> current state, the expected data layout and how to run both pipelines.
+> checklist above). The guideline above describes its current state and is
+> already runnable.
 
 ## 📁 Repository structure
 
@@ -201,7 +215,7 @@ We thank the authors for releasing their code.
 ## 📄 License
 
 The code is released under Apache 2.0. Vendored third-party components
-keep their own licenses, which take precedence for those directories — see
+keep their own licenses, which take precedence for those directories. See
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). In particular `datapreprocess/vggt`
 (CC BY-NC 4.0) and the Gaussian rasterizers (Gaussian-Splatting License) are
 restricted to non-commercial research use, and the released weights inherit the
