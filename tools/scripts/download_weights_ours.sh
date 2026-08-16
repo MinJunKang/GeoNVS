@@ -8,7 +8,8 @@ mkdir -p pretrained_weights
 
 # ---------------------------------------------------------------------------
 # GeoNVS trained weights (GS-Adapter + LoRA)
-#   eccv_gattn   : SEVA backbone       (main results)
+#   eccv_gattn   : SEVA backbone, gated-attention fusion (main results)
+#   eccv_base    : SEVA backbone, concat-FeedForward fusion (ablation)
 #   eccv_camctrl : CameraCtrl backbone
 # ---------------------------------------------------------------------------
 mkdir -p pretrained_weights/eccv_gattn
@@ -16,6 +17,12 @@ wget -c -O pretrained_weights/eccv_gattn/gs_adapter_weights.pth \
     "https://huggingface.co/HugMinjun/GeoNVS/resolve/main/eccv_gattn/gs_adapter_weights.pth"
 wget -c -O pretrained_weights/eccv_gattn/pytorch_lora_weights.safetensors \
     "https://huggingface.co/HugMinjun/GeoNVS/resolve/main/eccv_gattn/pytorch_lora_weights.safetensors"
+
+mkdir -p pretrained_weights/eccv_base
+wget -c -O pretrained_weights/eccv_base/gs_adapter_weights.pth \
+    "https://huggingface.co/HugMinjun/GeoNVS/resolve/main/eccv_base/gs_adapter_weights.pth"
+wget -c -O pretrained_weights/eccv_base/pytorch_lora_weights.safetensors \
+    "https://huggingface.co/HugMinjun/GeoNVS/resolve/main/eccv_base/pytorch_lora_weights.safetensors"
 
 mkdir -p pretrained_weights/eccv_camctrl
 wget -c -O pretrained_weights/eccv_camctrl/gs_adapter_weights.pth \
