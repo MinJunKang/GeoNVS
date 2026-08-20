@@ -177,7 +177,9 @@ information the GS-Adapter consumes (including runtime and sharding advice).
 
 ```
 GeoNVS/
-├── train_seva.py  train_camctrl.py     # training entry points
+│                                       # training entry points:
+├── train_seva.py                       #   train GeoNVS with SEVA baseline
+├── train_camctrl.py                    #   train GeoNVS with CameraCtrl baseline
 │                                       # evaluation entry points (demo_*.py):
 ├── demo.py                             #   GeoNVS, and the SEVA backbone alone
 ├── demo_regression.py                  #   a geometry prior alone, no diffusion
