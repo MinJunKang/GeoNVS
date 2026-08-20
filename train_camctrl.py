@@ -570,7 +570,8 @@ def main():
                 f"Checkpoint '{args.resume_from_checkpoint}' does not exist. Starting a new training run."
             )
             args.resume_from_checkpoint = None
-        resume_path = os.path.join(args.output_dir, resume_path)
+        else:
+            resume_path = os.path.join(args.output_dir, resume_path)
     else:
         resume_path = None
         
@@ -749,7 +750,7 @@ def main():
         torch.load = safe_torch_load
         accelerator.load_state(resume_path)
         torch.load = original_torch_load
-        global_step = int(resume_path.split("-")[1])
+        global_step = int(os.path.basename(resume_path).split("-")[1])
         resume_global_step = global_step * args.gradient_accumulation_steps
         first_epoch = global_step // num_update_steps_per_epoch
         resume_step = resume_global_step % (num_update_steps_per_epoch * args.gradient_accumulation_steps)
@@ -770,16 +771,22 @@ def main():
             train_dataloader.sampler.set_epoch(epoch)
         main_model.train()
         train_svd_loss, train_feat_loss = 0.0, 0.0
-        for step, batch in enumerate(train_dataloader):
+
+        # Fast-forward the epoch the checkpoint stopped inside. This skips at
+        # the batch-sampler level, so the batches already consumed are never
+        # loaded; iterating over them and discarding the result would re-read
+        # every chunk, image and gaussian file for nothing (hours, at the step
+        # counts these runs reach). The sampler shuffle is a function of
+        # (seed, epoch), so the batches that follow are the same either way.
+        if resume_path and epoch == first_epoch and resume_step > 0:
+            active_dataloader = accelerator.skip_first_batches(train_dataloader, resume_step)
+        else:
+            active_dataloader = train_dataloader
+
+        for step, batch in enumerate(active_dataloader):
             
             # skip bad batch
             if batch == {}:
-                continue
-            
-            # Skip steps until we reach the resumed step
-            if resume_path and epoch == first_epoch and step < resume_step:
-                if step % args.gradient_accumulation_steps == 0:
-                    progress_bar.update(1)
                 continue
             
             #TODO: need consistent type casting method
