@@ -5,7 +5,7 @@
 [![Project page](https://img.shields.io/badge/Project%20page-GeoNVS-1a73e8.svg)](https://sites.google.com/view/minjun-kang/geonvs-eccv26)
 [![Paper](https://img.shields.io/badge/arXiv-2603.14965-b31b1b.svg)](https://arxiv.org/abs/2603.14965)
 [![Weights](https://img.shields.io/badge/🤗%20HuggingFace-Weights-yellow)](https://huggingface.co/HugMinjun/GeoNVS)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Poster](https://img.shields.io/badge/Poster-ECCV%202026-6a3d9a.svg)](assets/GeoNVS_ECCV2026_poster.pdf)
 
 Minjun Kang<sup>1</sup>, Inkyu Shin<sup>2</sup>, Taeyeop Lee<sup>1</sup>, Myungchul Kim<sup>1</sup>, In So Kweon<sup>1</sup>, Kuk-Jin Yoon<sup>1</sup>
 
@@ -28,7 +28,7 @@ LoRA layers are trained; the diffusion backbone stays frozen.
 - [x] Evaluation code and benchmark protocol runners
 - [x] Pretrained GS-Adapter + LoRA weights ([HuggingFace](https://huggingface.co/HugMinjun/GeoNVS))
 - [x] Baseline comparison methods (geometry models and video-diffusion models)
-- [x] Geometry-fidelity metrics (ViPE camera pose error, Chamfer distance)
+- [x] Geometry-fidelity metrics ([ViPE](https://github.com/nv-tlabs/vipe) camera pose error, Chamfer distance)
 - [x] Dataset preprocessing code ([`datapreprocess/`](datapreprocess/))
 
 ## ✨ Highlights
@@ -212,8 +212,9 @@ Built on [Stable Virtual Camera](https://github.com/Stability-AI/stable-virtual-
 [pixelSplat](https://github.com/dcharatan/pixelsplat),
 [InstantSplat](https://github.com/NVlabs/InstantSplat),
 [LangSplat](https://github.com/minghanqin/LangSplat),
-[PUP-3DGS](https://github.com/j-alex-hanson/gaussian-splatting-pup) and
-[3D Gaussian Splatting](https://github.com/graphdeco-inria/gaussian-splatting).
+[PUP-3DGS](https://github.com/j-alex-hanson/gaussian-splatting-pup),
+[3D Gaussian Splatting](https://github.com/graphdeco-inria/gaussian-splatting) and
+[ViPE](https://github.com/nv-tlabs/vipe).
 We thank the authors for releasing their code.
 
 ## 📄 License
